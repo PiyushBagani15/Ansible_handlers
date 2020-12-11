@@ -1,0 +1,59 @@
+- hosts: 192.168.43.90
+  tasks:
+  
+  - include_vars: vars.yml
+  - file:
+        state: directory
+        path: "/{{ dvd_dir }}"
+
+  - mount:
+        src: "/dev/cdrom"
+        path: "/{{ dvd_dir }}"
+        state: mounted
+        fstype: "iso9660"
+
+  - yum_repository:
+        baseurl: "/{{ dvd_dir }}/AppStream"
+        gpgcheck: no
+        name: "AppStream"
+        description: "AppStream Repository"
+   
+  - yum_repository:
+        baseurl: "//{{ dvd_dir }}/BaseOS"
+        name: "BaseOS"
+        gpgcheck: no
+        description: "My BaseOS"
+
+
+  - package:
+        name: "httpd"
+        state: present
+  - file:
+        state: directory
+        path: "{{ dvd_dir }}"
+
+  - template:
+        dest: "/etc/httpd/conf.d/my.conf"
+        src: "/root/httpd15.conf"
+    notify:
+    - Restart httpd
+
+  - copy:
+        dest: "{{ doc_root }}/index.html"
+        src: "/var/www/html/index.html"
+
+  - firewalld:
+        port: "{{ port }}/tcp"
+        state: enabled
+        permanent: yes
+        immediate: yes
+
+  handlers:
+  - name: Restart httpd
+    service:
+        name: "httpd"
+        state: "started"
+        enabled: yes
+
+   
+   

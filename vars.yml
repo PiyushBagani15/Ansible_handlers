@@ -1,0 +1,3 @@
+dvd_dir: "/dvd1"
+port: 83
+doc_root: "/var/www/pi"
