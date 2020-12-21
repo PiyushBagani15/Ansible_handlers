@@ -1,0 +1,17 @@
+- hosts: all
+  vars_files:
+  - '{{ ansible_facts["os_family"] }}.yml'
+  tasks:
+  - name: "Installing webserver software according to respective OS"
+    package:
+            name: " {{ software }}" 
+            state: present
+  - name: 'starting the service'
+    service:
+            name: "{{ software }}"
+            state: started
+            enabled: yes
+
+
+
+         
